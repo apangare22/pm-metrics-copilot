@@ -114,7 +114,9 @@ function AppShell({ user }: { user: User }) {
     setShowSaveForm(false);
 
     try {
-      const output = await analyzeMetrics(validMetrics, productContext, timePeriod || null);
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('Session expired. Please log in again.');
+      const output = await analyzeMetrics(validMetrics, productContext, timePeriod || null, session.access_token);
       setCurrentOutput(output);
       setActivePanel('churn_retention');
       setInputExpanded(false);
