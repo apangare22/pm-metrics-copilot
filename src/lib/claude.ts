@@ -15,7 +15,22 @@ export async function analyzeMetrics(
     body: JSON.stringify({ metrics, productContext, timePeriod }),
   });
 
-  const data = await response.json();
+  const text = await response.text();
+
+  let data: { error?: string } & Partial<AnalysisOutput>;
+  try {
+    data = JSON.parse(text);
+  } catch {
+    // Non-JSON response — likely a timeout or server error from Vercel
+    if (!response.ok) {
+      throw new Error(
+        response.status === 504
+          ? 'Request timed out. Try with fewer metrics or try again.'
+          : `Server error (${response.status}). Please try again.`
+      );
+    }
+    throw new Error('Unexpected response from server. Please try again.');
+  }
 
   if (!response.ok) {
     throw new Error(data.error ?? 'Analysis failed. Please try again.');
