@@ -19,11 +19,22 @@ export interface InsightPanel {
   summary: string;
 }
 
+export interface MetricTarget {
+  metric: string;
+  current: number;
+  target: number;
+  timeframe: string;
+  unit: string;
+}
+
+export type PanelKey = 'churn_retention' | 'ab_tests' | 'funnel_dropoff' | 'leading_lagging';
+
 export interface AnalysisOutput {
   churn_retention: InsightPanel;
   ab_tests: InsightPanel;
   funnel_dropoff: InsightPanel;
   leading_lagging: InsightPanel;
+  metric_targets: MetricTarget[];
 }
 
 export interface Analysis {

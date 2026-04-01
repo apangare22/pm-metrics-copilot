@@ -5,7 +5,7 @@ import type { User } from '@supabase/supabase-js';
 import { supabase } from './lib/supabase';
 import { analyzeMetrics } from './lib/claude';
 
-import type { Metric, ProductContext, AnalysisOutput, Analysis } from './types';
+import type { Metric, ProductContext, AnalysisOutput, Analysis, PanelKey } from './types';
 
 import Login from './components/auth/Login';
 import Signup from './components/auth/Signup';
@@ -20,6 +20,7 @@ import PanelTabs from './components/output/PanelTabs';
 import SeverityDonut from './components/output/SeverityDonut';
 import SeverityByPanel from './components/output/SeverityByPanel';
 import MetricsBarChart from './components/output/MetricsBarChart';
+import ComparisonChart from './components/output/ComparisonChart';
 
 import {
   Loader2,
@@ -33,7 +34,6 @@ import {
 } from 'lucide-react';
 
 type InputMode = 'manual' | 'csv';
-type PanelKey = keyof AnalysisOutput;
 
 function createDefaultMetrics(): Metric[] {
   return [
@@ -438,6 +438,11 @@ function AppShell({ user }: { user: User }) {
                   <div className="mt-4">
                     <MetricsBarChart metrics={metrics} />
                   </div>
+                  {currentOutput.metric_targets?.length > 0 && (
+                    <div className="mt-4">
+                      <ComparisonChart targets={currentOutput.metric_targets} />
+                    </div>
+                  )}
                 </div>
               </div>
             )}

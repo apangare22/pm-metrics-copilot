@@ -8,13 +8,13 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import type { AnalysisOutput } from '../../types';
+import type { AnalysisOutput, PanelKey } from '../../types';
 
 interface Props {
   output: AnalysisOutput;
 }
 
-const PANEL_LABELS: Record<keyof AnalysisOutput, string> = {
+const PANEL_LABELS: Record<PanelKey, string> = {
   churn_retention: 'Churn',
   ab_tests: 'A/B Tests',
   funnel_dropoff: 'Funnel',
@@ -22,9 +22,9 @@ const PANEL_LABELS: Record<keyof AnalysisOutput, string> = {
 };
 
 export default function SeverityByPanel({ output }: Props) {
-  const data = (Object.keys(PANEL_LABELS) as (keyof AnalysisOutput)[]).map((key) => {
+  const data = (Object.keys(PANEL_LABELS) as PanelKey[]).map((key) => {
     const panel = output[key];
-    const counts = { High: 0, Medium: 0, Low: 0 };
+    const counts: Record<string, number> = { High: 0, Medium: 0, Low: 0 };
     for (const insight of panel.insights) {
       counts[insight.severity] = (counts[insight.severity] ?? 0) + 1;
     }

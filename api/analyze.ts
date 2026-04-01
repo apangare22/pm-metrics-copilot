@@ -150,7 +150,26 @@ Respond with ONLY a valid JSON object (no markdown, no code blocks, no explanati
   }
 }
 
-Provide 3-5 insights per panel. Severity must be exactly "High", "Medium", or "Low".`;
+Provide 3-5 insights per panel. Severity must be exactly "High", "Medium", or "Low".
+
+Also include a "metric_targets" array that shows recommended target values for each numeric input metric, based on your analysis and industry benchmarks. Only include metrics that have a clear numeric current value and a meaningful improvement target.
+
+"metric_targets": [
+  {
+    "metric": "exact metric name from input",
+    "current": 34,
+    "target": 48,
+    "timeframe": "3 months",
+    "unit": "%"
+  }
+]
+
+Rules for metric_targets:
+- "current" and "target" must be plain numbers (no symbols)
+- "unit" should be "%", "K", "M", "$", "mins", or "" for plain numbers
+- "timeframe" should be realistic (e.g. "1 month", "3 months", "6 months")
+- Only include metrics where improvement direction is clear
+- Target should reflect best-in-class benchmarks for the given product context`;
 
   // Call Claude API
   try {

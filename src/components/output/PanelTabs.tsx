@@ -1,6 +1,4 @@
-import type { AnalysisOutput, InsightPanel } from '../../types';
-
-type PanelKey = keyof AnalysisOutput;
+import type { AnalysisOutput, InsightPanel, PanelKey } from '../../types';
 
 interface PanelTabsProps {
   activeTab: PanelKey;
