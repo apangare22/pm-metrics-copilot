@@ -67,11 +67,14 @@ export default function CSVUpload({ onMetricsLoaded }: CSVUploadProps) {
 
   const handleDragLeave = () => setIsDragging(false);
 
+  const MAX_METRICS = 12;
+
   const handleApply = () => {
     if (!parsedData || !labelColumn || !valueColumn) return;
 
     const metrics: Metric[] = parsedData.rows
       .filter((row) => row[labelColumn]?.trim() && row[valueColumn]?.trim())
+      .slice(0, MAX_METRICS)
       .map((row) => ({
         id: crypto.randomUUID(),
         label: row[labelColumn].trim(),
@@ -82,6 +85,10 @@ export default function CSVUpload({ onMetricsLoaded }: CSVUploadProps) {
       setErrorMessage('No valid rows found with the selected columns.');
       setUploadState('error');
       return;
+    }
+
+    if (parsedData.rows.length > MAX_METRICS) {
+      setErrorMessage(`Only the first ${MAX_METRICS} rows were imported. Remove extras to stay within the limit.`);
     }
 
     onMetricsLoaded(metrics);

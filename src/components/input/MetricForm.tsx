@@ -1,13 +1,18 @@
 import type { Metric } from '../../types';
 import { Plus, Trash2 } from 'lucide-react';
 
+const MAX_METRICS = 12;
+
 interface MetricFormProps {
   metrics: Metric[];
   onChange: (metrics: Metric[]) => void;
 }
 
 export default function MetricForm({ metrics, onChange }: MetricFormProps) {
+  const atLimit = metrics.length >= MAX_METRICS;
+
   const addRow = () => {
+    if (atLimit) return;
     const newMetric: Metric = {
       id: crypto.randomUUID(),
       label: '',
@@ -67,15 +72,24 @@ export default function MetricForm({ metrics, onChange }: MetricFormProps) {
         ))}
       </div>
 
-      {/* Add row */}
-      <button
-        type="button"
-        onClick={addRow}
-        className="flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-700 font-medium py-1 px-2 rounded-lg hover:bg-indigo-50 transition-colors"
-      >
-        <Plus className="w-4 h-4" />
-        Add metric
-      </button>
+      {/* Add row / limit warning */}
+      {atLimit ? (
+        <p className="text-xs text-amber-600 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+          Maximum of {MAX_METRICS} metrics reached. Remove a metric to add another.
+        </p>
+      ) : (
+        <div className="flex items-center justify-between">
+          <button
+            type="button"
+            onClick={addRow}
+            className="flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-700 font-medium py-1 px-2 rounded-lg hover:bg-indigo-50 transition-colors"
+          >
+            <Plus className="w-4 h-4" />
+            Add metric
+          </button>
+          <span className="text-xs text-slate-400">{metrics.length} / {MAX_METRICS}</span>
+        </div>
+      )}
     </div>
   );
 }
