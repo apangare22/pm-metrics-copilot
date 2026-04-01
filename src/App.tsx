@@ -17,6 +17,9 @@ import MetricForm from './components/input/MetricForm';
 import CSVUpload from './components/input/CSVUpload';
 import AnalysisPanel from './components/output/AnalysisPanel';
 import PanelTabs from './components/output/PanelTabs';
+import SeverityDonut from './components/output/SeverityDonut';
+import SeverityByPanel from './components/output/SeverityByPanel';
+import MetricsBarChart from './components/output/MetricsBarChart';
 
 import {
   Loader2,
@@ -424,6 +427,18 @@ function AppShell({ user }: { user: User }) {
 
                 {/* Active panel */}
                 <AnalysisPanel panel={currentOutput[activePanel]} />
+
+                {/* Charts */}
+                <div>
+                  <h2 className="text-base font-semibold text-slate-800 mb-3">Charts</h2>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <SeverityDonut output={currentOutput} />
+                    <SeverityByPanel output={currentOutput} />
+                  </div>
+                  <div className="mt-4">
+                    <MetricsBarChart metrics={metrics} />
+                  </div>
+                </div>
               </div>
             )}
 
