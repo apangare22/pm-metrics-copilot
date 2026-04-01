@@ -5,12 +5,12 @@ import { BarChart3, Mail, Lock, Loader2, AlertCircle, CheckCircle } from 'lucide
 
 type LoginTab = 'password' | 'magic_link';
 
-export default function Login() {
+export default function Login({ authError }: { authError?: string | null }) {
   const [tab, setTab] = useState<LoginTab>('password');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(authError ?? null);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
 
   const handlePasswordLogin = async (e: React.FormEvent) => {

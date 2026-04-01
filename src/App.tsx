@@ -471,9 +471,24 @@ function AppShell({ user }: { user: User }) {
 
 function AuthRedirect() {
   const navigate = useNavigate();
+  const [authError, setAuthError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Handle magic link / email confirmation redirects
+    // Parse error from hash fragment (e.g. #error=access_denied&error_description=...)
+    const hash = window.location.hash;
+    if (hash.includes('error=')) {
+      const params = new URLSearchParams(hash.slice(1));
+      const desc = params.get('error_description');
+      const code = params.get('error_code');
+      if (code === 'otp_expired') {
+        setAuthError('Your magic link has expired. Please request a new one.');
+      } else {
+        setAuthError(desc?.replace(/\+/g, ' ') ?? 'Authentication failed. Please try again.');
+      }
+      // Clean up the hash so refreshing doesn't re-show the error
+      window.history.replaceState(null, '', window.location.pathname);
+    }
+
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_IN') {
         navigate('/', { replace: true });
@@ -482,7 +497,7 @@ function AuthRedirect() {
     return () => subscription.unsubscribe();
   }, [navigate]);
 
-  return <Login />;
+  return <Login authError={authError} />;
 }
 
 // ─── Root App ─────────────────────────────────────────────────────────────────
