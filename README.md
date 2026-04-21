@@ -29,13 +29,12 @@ Copy the example env file and fill in your credentials:
 cp .env.example .env
 ```
 
-Edit `.env`:
+Edit `.env` using **both** blocks in `.env.example`:
 
-```
-VITE_SUPABASE_URL=https://your-project.supabase.co
-VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
-VITE_ANTHROPIC_API_KEY=sk-ant-...
-```
+- **`VITE_*`**: used by the React app (Supabase client only).
+- **`SUPABASE_*` and `ANTHROPIC_API_KEY`**: used **only** by the Vercel serverless route `api/analyze.ts`. Claude is **not** called from the browser, so your Anthropic key never ships to users.
+
+Never put `ANTHROPIC_API_KEY` behind a `VITE_` prefix — Vite would embed it in client JavaScript.
 
 ### 3. Supabase Setup
 
@@ -49,17 +48,34 @@ VITE_ANTHROPIC_API_KEY=sk-ant-...
 ### 4. Get Anthropic API Key
 
 1. Go to [console.anthropic.com](https://console.anthropic.com)
-2. Create an API key and paste it as `VITE_ANTHROPIC_API_KEY`
-
-> **Note**: This app calls the Anthropic API directly from the browser using `dangerouslyAllowBrowser: true`. This is acceptable for personal/demo use but for production, consider proxying through a backend to keep your API key secret.
+2. Create an API key and set **`ANTHROPIC_API_KEY`** in `.env` (and in Vercel project settings for deploys).
 
 ### 5. Run Locally
+
+**Full stack (recommended)** — serves the Vite app and `/api/analyze`:
+
+```bash
+npx vercel dev
+```
+
+Open the URL printed in the terminal (often [http://localhost:3000](http://localhost:3000) for `vercel dev`).
+
+**Frontend only** — quick UI work without AI:
 
 ```bash
 npm run dev
 ```
 
-Open [http://localhost:5173](http://localhost:5173).
+Open [http://localhost:5173](http://localhost:5173). **Analyze** will not work until you use `vercel dev` or a deployed preview, because `/api/analyze` runs on Vercel.
+
+### 6. API keys and privacy
+
+| Variable | Where it runs | Safe to expose? |
+|----------|----------------|-----------------|
+| `VITE_SUPABASE_*` | Browser | The anon key is public by design; RLS must protect `analyses`. |
+| `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `ANTHROPIC_API_KEY` | Vercel server only | **No** — keep in `.env` (gitignored) and Vercel env settings only. |
+
+Keep the repo private, never commit `.env`, and do not grant Vercel or Supabase dashboard access to people you do not trust.
 
 ---
 
@@ -82,7 +98,7 @@ Open [http://localhost:5173](http://localhost:5173).
 
 1. Push your code to GitHub
 2. Go to [vercel.com](https://vercel.com) and import your repository
-3. Add environment variables in Vercel's project settings (same three vars from `.env`)
+3. Add environment variables in Vercel's project settings — same names as in `.env.example` (`VITE_SUPABASE_*` for the build, plus `SUPABASE_URL`, `SUPABASE_ANON_KEY`, and `ANTHROPIC_API_KEY` for `api/analyze`)
 4. Deploy — Vercel will auto-detect the Vite config
 
 The `vercel.json` file already handles SPA routing (all paths redirect to `index.html`).
